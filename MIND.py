@@ -47,6 +47,3 @@ def compute_MIND(surf_dir, features, parcellation, filter_vertices=False, resamp
 
 	print('Done!')
 	return MIND
-
-
-

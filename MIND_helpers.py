@@ -59,22 +59,27 @@ def get_KL(x, y, xtree, ytree): #Inspired by https://gist.github.com/atabakd/ed0
 
     n,d = x.shape
     m,dy = y.shape
-    
+
     #Check dimensions
     assert(d == dy)
+
+    # KL divergence requires at least 2 points in x (for the self-exclusion k=2 query)
+    # and at least 2 points overall (n-1 appears in the denominator).
+    if n < 2:
+        return 0.0
 
     # Get the first two nearest neighbours for x, since the closest one is the
     # sample itself.
     r = xtree.query(x, k=2, eps=.01, p=2)[0][:,1]
     s = ytree.query(x, k=1, eps=.01, p=2)[0]
-    
+
     rs_ratio = r/s
 
     #Remove points with zero, nan, or infinity. This happens when two regions have a vertex with the exact same value – an occurence that basically onnly happens for the single feature MSNs
     #and has to do with FreeSurfer occasionally outputting the exact same value for different vertices.
     rs_ratio = rs_ratio[np.isfinite(rs_ratio)]
     rs_ratio = rs_ratio[rs_ratio!=0.0]
-    
+
     # There is a mistake in the paper. In Eq. 14, the right side misses a negative sign
     # on the first term of the right hand side.
 
